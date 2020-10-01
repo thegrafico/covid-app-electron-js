@@ -1,0 +1,43 @@
+#inputForm {
+    width: 100%;
+}
+
+#userInput div.input-group {
+    width: 30%;
+    margin-right: 5%;
+    border-radius: 3%;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+#userInput div input {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th {
+    font-size: 1.3em;
+}
+
+td {
+    font-size: 0.9em;
+}
+
+td,
+th {
+    border-bottom: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+td:nth-child(1),
+th:nth-child(1) {
+    border-right: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
