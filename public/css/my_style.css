@@ -41,3 +41,7 @@ th:nth-child(1) {
     text-align: left;
     padding: 8px;
 }
+
+.fa-trash:hover {
+    cursor: pointer;
+}
