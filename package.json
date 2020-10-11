@@ -11,5 +11,10 @@
     "license": "ISC",
     "devDependencies": {
         "electron": "^10.1.2"
+    },
+    "dependencies": {
+        "csv-parser": "^2.3.3",
+        "jquery": "^3.5.1",
+        "jquery-csv": "^1.0.11"
     }
 }
