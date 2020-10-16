@@ -86,13 +86,13 @@ let config = {
 }
 
 
-function addDataPlot(x, y) {
+function addDataPlot(x, y, myLabel) {
     // var colorName = colorNames[config.data.datasets.length % colorNames.length];
     // var newColor = window.chartColors[colorName];
     config.data.labels = x;
     let color = colors[Math.floor((Math.random() * colors.length) + 1)];
     var newDataset = {
-        label: GLOBAL_COUNTY,
+        label: myLabel,
         backgroundColor: color,
         borderColor: color,
         data: y,
@@ -125,7 +125,7 @@ function removePlot(_county) {
  * @param  {Arra[Object]} data  state string
  * @returns {boolean} true is data was added
  */
-function add_values_to_table(data) {
+async function add_values_to_table(data) {
 
     let xData = [];
     let yData = [];
@@ -148,12 +148,12 @@ function add_values_to_table(data) {
         $(`${table} > tbody:last-child`).append(template);
     }
 
-    addDataPlot(xData, yData);
+    let county = await get_county_by_code(data[0]["geo_value"]);
+    addDataPlot(xData, yData, county);
 }
 
 var callback = function(result, message, epidata) {
     console.log(result, message, epidata != null ? epidata.length : void 0);
-
     if (epidata != undefined && epidata.length > 0) {
         add_values_to_table(epidata);
     }
@@ -248,26 +248,30 @@ async function get_code_by_state_county(state, county) {
     return found_state_and_county[0]["FIPS"];
 }
 
+async function get_county_by_code(code) {
 
+    let result = await read_csv(csv_file);
 
+    let found_county = result.filter(element => element["FIPS"].toLocaleLowerCase() == code);
 
-$(document).ready(function() {
+    console.log(found_county);
+    if (found_county.length == 0) {
+        return null;
+    }
+    return found_county[0]["county"];
+}
 
-    ctx = document.getElementById('myChart').getContext('2d');
-    chart = new Chart(ctx, config);
+/**
+ * 
+ * @param {String} state 
+ * @param {String} county 
+ */
+function createPlot(state, county) {
 
-
-    $(addBtn).click(async function() {
+    return new Promise(async function(resolve, reject) {
 
         //let table_row = `<tr> <td> XXX </td> <td> YYY </td> <td><button id="btnDelete">Delete</button></td> </tr> `;
         let table_row = `<tr id='ZZZ'> <td> XXX </td> <td> YYY </td> <td> <i style="color: red;" class="fa fa-trash btnTrash" aria-hidden="true"> </i> </td> </tr> `;
-
-        let state = $(stateInput).val();
-        let county = $(countyInput).val();
-
-        /* TODO: input validation
-            Verify is state and county is not empty.  to notify the user use this functon -> alert("Message")
-        */
 
         let isDuplicate = false;
         state_county.forEach(dict => {
@@ -281,7 +285,7 @@ $(document).ready(function() {
             }
         });
 
-        if (isDuplicate) return;
+        if (isDuplicate) return reject(false);
 
         let code = await get_code_by_state_county(state, county);
         code = code.toString();
@@ -307,8 +311,52 @@ $(document).ready(function() {
         GLOBAL_STATE = state;
 
         Epidata.covidcast(callback, 'indicator-combination', 'confirmed_7dav_incidence_prop', 'day', 'county', [Epidata.range(xDaysBefore, today)], code);
-
+        resolve(true);
     });
+}
+
+function get_days_before(time, justNumber = false) {
+
+    let today = new Date();
+
+    if (time != null) {
+        today.setDate(today.getDate() - time);
+    }
+
+    let year = today.getFullYear();
+    let month = today.getMonth() + 1;
+    let day = today.getDate();
+
+    if (justNumber) {
+        month = (month < 10) ? `0${month}` : month;
+        return `${year}${month}${day}`;
+    }
+
+    return `${month}/${day}/${year}`;
+}
+
+
+$(document).ready(async function() {
+
+    ctx = document.getElementById('myChart').getContext('2d');
+    chart = new Chart(ctx, config);
+
+    await createPlot("WA", "Franklin");
+    await createPlot("WA", "Benton");
+
+    $(addBtn).click(async function() {
+
+
+        let state = $(stateInput).val();
+        let county = $(countyInput).val();
+
+        await createPlot(state, county);
+    });
+
+    $("#export").click(function() {
+        // $("#dataTable").tableToCSV("data.csv");
+    });
+
 
     $('body').on('click', 'i.btnTrash', function() {
 
@@ -343,29 +391,6 @@ $(document).ready(function() {
     $("#date_2").text(get_days_before(DAYS_BEFORE));
 
 });
-
-
-
-function get_days_before(time, justNumber = false) {
-
-    let today = new Date();
-
-    if (time != null) {
-        today.setDate(today.getDate() - time);
-    }
-
-    let year = today.getFullYear();
-    let month = today.getMonth() + 1;
-    let day = today.getDate();
-
-    if (justNumber) {
-        month = (month < 10) ? `0${month}` : month;
-        return `${year}${month}${day}`;
-    }
-
-    return `${month}/${day}/${year}`;
-}
-
 // $('.list').on('click', 'span', (e) => {
 //     $(e.target).parent().remove();
 //   });
