@@ -29,6 +29,20 @@ let colors = [
     'rgb(166, 43, 105)',
     'rgb(166, 43, 74)',
     'rgb(166, 43, 43)',
+    'rgb(255,127,80)',
+    'rgb(0,128,128)',
+    'rgb(30,144,255)',
+    'rgb(138,43,226)',
+    'rgb(230,230,250)',
+    'rgb(221,160,221)',
+    'rgb(127,255,212)',
+    'rgb(0,128,128)',
+
+
+
+
+
+
 ];
 
 let DAYS_BEFORE = 21;
@@ -354,7 +368,7 @@ $(document).ready(async function() {
     });
 
     $("#export").click(function() {
-        // $("#dataTable").tableToCSV("data.csv");
+         $("#dataTable").tableToCSV("data.csv");
     });
 
 
