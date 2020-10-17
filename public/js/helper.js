@@ -335,6 +335,8 @@ function get_days_before(time, justNumber = false) {
     return `${month}/${day}/${year}`;
 }
 
+// SPFJER
+
 
 $(document).ready(async function() {
 
@@ -354,6 +356,7 @@ $(document).ready(async function() {
     });
 
     $("#export").click(function() {
+        var image = myChart.toBase64Image();
         // $("#dataTable").tableToCSV("data.csv");
     });
 
