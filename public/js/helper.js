@@ -1,4 +1,5 @@
 const csv_file = "./../public/data/County_Geocode.csv";
+const fileSaver = require('file-saver');
 
 const addBtn = "#addBtn";
 const table = "#dataTable";
@@ -29,6 +30,14 @@ let colors = [
     'rgb(166, 43, 105)',
     'rgb(166, 43, 74)',
     'rgb(166, 43, 43)',
+    'rgb(255,127,80)',
+    'rgb(0,128,128)',
+    'rgb(30,144,255)',
+    'rgb(138,43,226)',
+    'rgb(230,230,250)',
+    'rgb(221,160,221)',
+    'rgb(127,255,212)',
+    'rgb(0,128,128)',
 ];
 
 let DAYS_BEFORE = 21;
@@ -56,7 +65,7 @@ let config = {
         maintainAspectRatio: false,
         title: {
             display: true,
-            text: 'Chart.js Line Chart'
+            text: 'COVID infection rates'
         },
         tooltips: {
             mode: 'index',
@@ -110,9 +119,11 @@ function removePlot(_county) {
     }
 
     for (index in chart.data.datasets) {
-        if (chart.data.datasets[index].label == _county) {
+
+        if (chart.data.datasets[index].label.toLocaleLowerCase().trim() == _county.toLocaleLowerCase().trim()) {
             chart.data.datasets.splice(index, 1);
             chart.update();
+            console.log("County removed");
             break;
         }
     }
@@ -130,10 +141,13 @@ async function add_values_to_table(data) {
     let xData = [];
     let yData = [];
 
+    let _county = await get_county_by_code(data[0]["geo_value"]);
+
     for (indx in data) {
 
         let template = ` 
         <tr class="${data[indx]["geo_value"]}">
+            <td>${_county}</td>
             <td>${data[indx]["geo_value"]}</td>
             <td>${data[indx]["time_value"]}</td>
             <td>${data[indx]["direction"]}</td>
@@ -148,12 +162,12 @@ async function add_values_to_table(data) {
         $(`${table} > tbody:last-child`).append(template);
     }
 
-    let county = await get_county_by_code(data[0]["geo_value"]);
-    addDataPlot(xData, yData, county);
+    // console.log("COUNTY TO SET: ", _county);
+    addDataPlot(xData, yData, _county);
 }
 
 var callback = function(result, message, epidata) {
-    console.log(result, message, epidata != null ? epidata.length : void 0);
+    // console.log(result, message, epidata != null ? epidata.length : void 0);
     if (epidata != undefined && epidata.length > 0) {
         add_values_to_table(epidata);
     }
@@ -250,11 +264,18 @@ async function get_code_by_state_county(state, county) {
 
 async function get_county_by_code(code) {
 
+    console.log("CODE: ", code);
+
     let result = await read_csv(csv_file);
 
-    let found_county = result.filter(element => element["FIPS"].toLocaleLowerCase() == code);
+    let found_county = result.filter((element) => {
+        let fipsCode = element["FIPS"].toLocaleLowerCase();
 
-    console.log(found_county);
+        fipsCode = (fipsCode.length == 4) ? `0${fipsCode}` : fipsCode;
+
+        return fipsCode == code;
+    });
+
     if (found_county.length == 0) {
         return null;
     }
@@ -277,7 +298,7 @@ function createPlot(state, county) {
         state_county.forEach(dict => {
             if (Object.keys(dict).length > 0) {
                 Object.keys(dict).forEach(inner => {
-                    console.log(dict[inner], " == ", state + county, (state + county) == dict[inner]);
+                    // console.log(dict[inner], " == ", state + county, (state + county) == dict[inner]);
                     if ((state + county) == dict[inner]) {
                         isDuplicate = true;
                     }
@@ -336,7 +357,7 @@ function get_days_before(time, justNumber = false) {
 }
 
 // SPFJER
-
+var fs = require('fs');
 
 $(document).ready(async function() {
 
@@ -356,8 +377,8 @@ $(document).ready(async function() {
     });
 
     $("#export").click(function() {
-        var image = myChart.toBase64Image();
-        // $("#dataTable").tableToCSV("data.csv");
+        // var image = myChart.toBase64Image();
+        $("#dataTable").tableToCSV("data.csv");
     });
 
 
@@ -367,9 +388,10 @@ $(document).ready(async function() {
 
         let _county = $(`#${id} td:nth-child(2)`).text().trim();
 
-        // console.log("COUNTY: ", _county);
+        //console.log("COUNTY: ", _county);
+        //console.log("ID TO DELETE: ", id);
 
-        // console.log("ID TO DELETE: ", id);
+
         state_county = state_county.filter(dict => {
 
             let condition = (id in dict);
@@ -382,10 +404,21 @@ $(document).ready(async function() {
 
         // console.log(state_county)
         $(this).parent().parent().remove();
-
         $(`.${id}`).remove();
         removePlot(_county);
 
+    });
+
+    $("#download").on("click", function() {
+        // /*Get image of canvas element*/
+
+        var url_base64jp = document.getElementById("myChart").toDataURL("image/jpg");
+        this.href = url_base64jp;
+
+        // var img = document.getElementById("myChart");
+        // img.toBlob(function(image) {
+        //     fileSaver.saveAs(image, "pretty_image.png");
+        // }, "image/jpg");
     });
 
     // TIME PERIOD

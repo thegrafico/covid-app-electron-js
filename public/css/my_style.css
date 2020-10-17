@@ -50,3 +50,11 @@ th:nth-child(1) {
     max-height: 500px;
     overflow: scroll;
 }
+
+.time-period {
+    font-size: large;
+}
+
+.card-center-text {
+    text-align: center;
+}
