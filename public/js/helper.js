@@ -1,5 +1,4 @@
 const csv_file = "./../public/data/County_Geocode.csv";
-const fileSaver = require('file-saver');
 
 const addBtn = "#addBtn";
 const table = "#dataTable";
@@ -63,9 +62,6 @@ let DAYS_BEFORE = 21;
 let state_county = [];
 let temp = {};
 
-var GLOBAL_STATE = undefined;
-var GLOBAL_COUNTY = undefined;
-
 let chart = undefined;
 
 let config = {
@@ -100,7 +96,7 @@ let config = {
                 scaleLabel: {
                     display: true,
                     labelString: 'Dates'
-                    
+
                 },
             }],
             yAxes: [{
@@ -114,14 +110,21 @@ let config = {
     }
 }
 
+/**
+ * 
+ * @param {Number} x  - x-data for the plot
+ * @param {Number} y - y-data for the plot
+ * @param {Object} state_county - key value for state and county
+ */
+function addDataPlot(x, y, state_county) {
 
-function addDataPlot(x, y, myLabel) {
+    const { state, county } = state_county;
     // var colorName = colorNames[config.data.datasets.length % colorNames.length];
     // var newColor = window.chartColors[colorName];
     config.data.labels = x;
     let color = colors[Math.floor((Math.random() * colors.length) + 1)];
     var newDataset = {
-        label: myLabel,
+        label: `${state}, ${county}`,
         backgroundColor: color,
         borderColor: color,
         data: y,
@@ -137,7 +140,6 @@ function removePlot(_county) {
     if (_county == undefined || _county.length == 0) {
         return;
     }
-
     for (index in chart.data.datasets) {
 
         if (chart.data.datasets[index].label.toLocaleLowerCase().trim() == _county.toLocaleLowerCase().trim()) {
@@ -161,13 +163,14 @@ async function add_values_to_table(data) {
     let xData = [];
     let yData = [];
 
-    let _county = await get_county_by_code(data[0]["geo_value"]);
+    let { state, county } = await get_state_and_county_by_code(data[0]["geo_value"]);
 
     for (indx in data) {
 
         let template = ` 
         <tr class="${data[indx]["geo_value"]}">
-            <td>${_county}</td>
+            <td>${state}</td>
+            <td>${county}</td>
             <td>${data[indx]["geo_value"]}</td>
             <td>${data[indx]["time_value"]}</td>
             <td>${data[indx]["direction"]}</td>
@@ -183,11 +186,14 @@ async function add_values_to_table(data) {
     }
 
     // console.log("COUNTY TO SET: ", _county);
-    addDataPlot(xData, yData, _county);
+    addDataPlot(xData, yData, { state, county });
 }
 
 var callback = function(result, message, epidata) {
-    // console.log(result, message, epidata != null ? epidata.length : void 0);
+
+
+    console.log(result, message, epidata != null ? epidata.length : void 0);
+
     if (epidata != undefined && epidata.length > 0) {
         add_values_to_table(epidata);
     }
@@ -282,7 +288,7 @@ async function get_code_by_state_county(state, county) {
     return found_state_and_county[0]["FIPS"];
 }
 
-async function get_county_by_code(code) {
+async function get_state_and_county_by_code(code) {
 
     console.log("CODE: ", code);
 
@@ -296,10 +302,12 @@ async function get_county_by_code(code) {
         return fipsCode == code;
     });
 
+    console.log("HERE: ", found_county[0]);
+
     if (found_county.length == 0) {
         return null;
     }
-    return found_county[0]["county"];
+    return { county: found_county[0]["county"], state: found_county[0]["state"] };
 }
 
 /**
@@ -406,6 +414,7 @@ $(document).ready(async function() {
 
         let id = $(this).parent().parent().attr('id').toString();
 
+        let _state = $(`#${id} td:nth-child(1)`).text().trim();
         let _county = $(`#${id} td:nth-child(2)`).text().trim();
 
         //console.log("COUNTY: ", _county);
@@ -425,7 +434,7 @@ $(document).ready(async function() {
         // console.log(state_county)
         $(this).parent().parent().remove();
         $(`.${id}`).remove();
-        removePlot(_county);
+        removePlot(`${_state}, ${_county}`);
 
     });
 
@@ -440,7 +449,7 @@ $(document).ready(async function() {
         //     fileSaver.saveAs(image, "pretty_image.png");
         // }, "image/jpg");
     });
-   
+
 
     // TIME PERIOD
     $("#time-period-title").text(DAYS_BEFORE);
