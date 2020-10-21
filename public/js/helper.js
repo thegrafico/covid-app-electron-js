@@ -443,11 +443,6 @@ $(document).ready(async function() {
 
         var url_base64jp = document.getElementById("myChart").toDataURL("image/jpg");
         this.href = url_base64jp;
-
-        // var img = document.getElementById("myChart");
-        // img.toBlob(function(image) {
-        //     fileSaver.saveAs(image, "pretty_image.png");
-        // }, "image/jpg");
     });
 
 

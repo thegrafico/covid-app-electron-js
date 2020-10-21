@@ -1,7 +1,7 @@
 {
     "name": "covid_app",
     "version": "1.0.0",
-    "description": "",
+    "description": "App for covid track",
     "main": "app.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
@@ -10,12 +10,12 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
-        "electron": "^10.1.2"
+        "electron": "^10.1.2",
+        "electron-packager": "^15.1.0"
     },
     "dependencies": {
         "csv-parser": "^2.3.3",
         "electron-reload": "^1.5.0",
-        "file-saver": "^2.0.2",
         "jquery": "^3.5.1",
         "jquery-csv": "^1.0.11"
     }
