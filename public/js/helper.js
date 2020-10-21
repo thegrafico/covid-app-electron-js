@@ -17,14 +17,14 @@ let colors = [
     'rgb(43, 166, 74)',
     'rgb(43, 166, 105)',
     'rgb(43, 166, 135)',
-    'rgb(43, 166, 166)',
+    'rgb(160,82,45)',
     'rgb(43, 135, 166)',
-    'rgb(43, 105, 166)',
+    'rgb(255,228,181)',
     'rgb(43, 74, 166)',
     'rgb(43, 43, 166)',
-    'rgb(74, 43, 166)',
+    'rgb(240,255,240)',
     'rgb(105, 43, 166)',
-    'rgb(135, 43, 166)',
+    'rgb(240,255,255)',
     'rgb(166, 43, 166)',
     'rgb(166, 43, 135)',
     'rgb(166, 43, 105)',
@@ -38,6 +38,25 @@ let colors = [
     'rgb(221,160,221)',
     'rgb(127,255,212)',
     'rgb(0,128,128)',
+    'rgb(184,134,11)',
+    'rgb(85,107,47)',
+    'rgb(34,139,34)',
+    'rgb(47,79,79)',
+    'rgb(127,255,212)',
+    'rgb(176,196,222)',
+    'rgb(186,85,211)',
+    'rgb(47,79,79)',
+    'rgb(112,128,144)',
+    'rgb(75,0,130)',
+    'rgb(70,130,180)',
+    'rgb(100,149,237)',
+    'rgb(0,191,255)',
+    'rgb(128,128,0)',
+    'rgb(255,140,0)',
+    'rgb(218,165,32)',
+    'rgb(205,92,92)',
+    'rgb(250,128,114)',
+
 ];
 
 let DAYS_BEFORE = 21;
@@ -65,7 +84,7 @@ let config = {
         maintainAspectRatio: false,
         title: {
             display: true,
-            text: 'COVID infection rates'
+            text: 'Covid-19 Infection Rates per 100,000 People at the Selected Travel Locations'
         },
         tooltips: {
             mode: 'index',
@@ -81,13 +100,14 @@ let config = {
                 scaleLabel: {
                     display: true,
                     labelString: 'Dates'
+                    
                 },
             }],
             yAxes: [{
                 display: true,
                 scaleLabel: {
                     display: true,
-                    labelString: 'Value'
+                    labelString: 'COVID-19 Infection Rate per 100,000 People'
                 }
             }]
         }
@@ -420,6 +440,7 @@ $(document).ready(async function() {
         //     fileSaver.saveAs(image, "pretty_image.png");
         // }, "image/jpg");
     });
+   
 
     // TIME PERIOD
     $("#time-period-title").text(DAYS_BEFORE);
