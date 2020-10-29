@@ -6,59 +6,20 @@ const stateInput = "#stateInput";
 const countyInput = "#countyInput";
 
 let colors = [
-    'rgb(166, 105, 43)',
-    'rgb(166, 135, 43)',
-    'rgb(166, 166, 43)',
-    'rgb(135, 166, 43)',
-    'rgb(105, 166, 43)',
-    'rgb(74, 166, 43)',
-    'rgb(43, 166, 43)',
-    'rgb(43, 166, 74)',
-    'rgb(43, 166, 105)',
-    'rgb(43, 166, 135)',
-    'rgb(160,82,45)',
-    'rgb(43, 135, 166)',
-    'rgb(255,228,181)',
-    'rgb(43, 74, 166)',
-    'rgb(43, 43, 166)',
-    'rgb(240,255,240)',
-    'rgb(105, 43, 166)',
-    'rgb(240,255,255)',
-    'rgb(166, 43, 166)',
-    'rgb(166, 43, 135)',
-    'rgb(166, 43, 105)',
-    'rgb(166, 43, 74)',
-    'rgb(166, 43, 43)',
-    'rgb(255,127,80)',
-    'rgb(0,128,128)',
-    'rgb(30,144,255)',
-    'rgb(138,43,226)',
-    'rgb(230,230,250)',
-    'rgb(221,160,221)',
-    'rgb(127,255,212)',
-    'rgb(0,128,128)',
-    'rgb(184,134,11)',
-    'rgb(85,107,47)',
-    'rgb(34,139,34)',
-    'rgb(47,79,79)',
-    'rgb(127,255,212)',
-    'rgb(176,196,222)',
-    'rgb(186,85,211)',
-    'rgb(47,79,79)',
-    'rgb(112,128,144)',
-    'rgb(75,0,130)',
-    'rgb(70,130,180)',
-    'rgb(100,149,237)',
-    'rgb(0,191,255)',
-    'rgb(128,128,0)',
-    'rgb(255,140,0)',
-    'rgb(218,165,32)',
-    'rgb(205,92,92)',
-    'rgb(250,128,114)',
+    'rgb(186, 216, 10)',
+    'rgb(0, 158, 73)',
+    'rgb(0, 178, 148)',
+    'rgb(0, 188, 242)',
+    'rgb(0, 24, 143)',
+    'rgb(104, 33, 122)',
+    'rgb(236, 0, 140)',
+    'rgb(232, 17, 35)',
+    'rgb(255, 140, 0)',
+    'rgb(255, 241, 0)',
 
 ];
 
-let DAYS_BEFORE = 21;
+let DAYS_BEFORE = 14;
 let state_county = [];
 let temp = {};
 
@@ -122,7 +83,9 @@ function addDataPlot(x, y, state_county) {
     // var colorName = colorNames[config.data.datasets.length % colorNames.length];
     // var newColor = window.chartColors[colorName];
     config.data.labels = x;
-    let color = colors[Math.floor((Math.random() * colors.length) + 1)];
+    let counter=0
+    //counter++;
+    let color = colors[counter]
     var newDataset = {
         label: `${state}, ${county}`,
         backgroundColor: color,
@@ -397,7 +360,7 @@ $(document).ready(async function() {
 
     $(addBtn).click(async function() {
 
-
+        
         let state = $(stateInput).val();
         let county = $(countyInput).val();
 
