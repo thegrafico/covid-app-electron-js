@@ -28,9 +28,6 @@ const COLORS = {
 let DAYS_BEFORE = 14;
 let state_county = [];
 let temp = {};
-
-let COUNTER = 0;
-
 let chart = undefined;
 
 let config = {
@@ -111,7 +108,6 @@ function addDataPlot(x, y, state_county) {
         data: y,
         fill: false
     };
-    COUNTER++;
     // console.log("Adding a color: ", COUNTER);
     config.data.datasets.push(newDataset);
     chart.update();
@@ -407,9 +403,6 @@ function get_days_before(time, justNumber = false) {
     return `${month}/${day}/${year}`;
 }
 
-// SPFJER
-var fs = require('fs');
-
 $(document).ready(async function() {
 
     ctx = document.getElementById('myChart').getContext('2d');
@@ -458,9 +451,6 @@ $(document).ready(async function() {
             }
             return false;
         });
-
-        COUNTER--;
-
         // console.log(state_county)
         $(this).parent().parent().remove();
         $(`.${id}`).remove();
