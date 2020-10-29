@@ -163,6 +163,7 @@
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
+
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1 time-period time-period card-center-text">
                                                 TIME PERIOD (DAYS: <span id="time-period-title"></span>)
                                             </div>
@@ -172,6 +173,21 @@
                                                 <span id="date_1">Date 1</span>
                                                 <br>
                                                 <span id="date_2">Date 2</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- DATA AVAILABLE IS CHANGED HERE -->
+                                        <div class="col mr-2">
+
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1 time-period time-period card-center-text">
+                                                Available Data: <span id="differenceAvailableDateFromApi"></span> Days
+                                            </div>
+
+                                            <div class="mb-0 font-weight-bold text-gray-800 card-center-text">
+
+                                                <span id="availableDataFromAPI_1">Date 1</span>
+                                                <br>
+                                                <span id="availableDataFromAPI_2">Date 2</span>
                                             </div>
                                         </div>
                                         <div class="col-auto">
@@ -271,7 +287,7 @@
 
 
                             <div class="card-body">
-                                <button class="btn btn-success float-right mb-4 btn-lg" id="export" data-export="export">Export to CSV</button>
+                                <button class="btn btn-success float-right mb-4 btn-lg" id="export" data-export="export">Export to Excel File</button>
 
                                 <div class="table-responsive">
                                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -279,12 +295,12 @@
                                             <tr>
                                                 <th>State</th>
                                                 <th>County</th>
-                                                <th>Geo_Value</th>
-                                                <th>Time_Value</th>
-                                                <th>Direction</th>
-                                                <th>Issue</th>
+                                                <th>FIPS</th>
+                                                <th>Sample_Date</th>
+                                                <th>Trend</th>
+                                                <th>Date Issued</th>
                                                 <th>Lag</th>
-                                                <th>Value</th>
+                                                <th>Case Rate</th>
                                             </tr>
                                         </thead>
 

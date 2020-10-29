@@ -4,63 +4,32 @@ const addBtn = "#addBtn";
 const table = "#dataTable";
 const stateInput = "#stateInput";
 const countyInput = "#countyInput";
+const differenceAvailableDateFromApi = "#differenceAvailableDateFromApi";
+const availableDataFromApi_1 = "#availableDataFromAPI_1";
+const availableDataFromApi_2 = "#availableDataFromAPI_2";
 
-let colors = [
-    'rgb(166, 105, 43)',
-    'rgb(166, 135, 43)',
-    'rgb(166, 166, 43)',
-    'rgb(135, 166, 43)',
-    'rgb(105, 166, 43)',
-    'rgb(74, 166, 43)',
-    'rgb(43, 166, 43)',
-    'rgb(43, 166, 74)',
-    'rgb(43, 166, 105)',
-    'rgb(43, 166, 135)',
-    'rgb(160,82,45)',
-    'rgb(43, 135, 166)',
-    'rgb(255,228,181)',
-    'rgb(43, 74, 166)',
-    'rgb(43, 43, 166)',
-    'rgb(240,255,240)',
-    'rgb(105, 43, 166)',
-    'rgb(240,255,255)',
-    'rgb(166, 43, 166)',
-    'rgb(166, 43, 135)',
-    'rgb(166, 43, 105)',
-    'rgb(166, 43, 74)',
-    'rgb(166, 43, 43)',
-    'rgb(255,127,80)',
-    'rgb(0,128,128)',
-    'rgb(30,144,255)',
-    'rgb(138,43,226)',
-    'rgb(230,230,250)',
-    'rgb(221,160,221)',
-    'rgb(127,255,212)',
-    'rgb(0,128,128)',
-    'rgb(184,134,11)',
-    'rgb(85,107,47)',
-    'rgb(34,139,34)',
-    'rgb(47,79,79)',
-    'rgb(127,255,212)',
-    'rgb(176,196,222)',
-    'rgb(186,85,211)',
-    'rgb(47,79,79)',
-    'rgb(112,128,144)',
-    'rgb(75,0,130)',
-    'rgb(70,130,180)',
-    'rgb(100,149,237)',
-    'rgb(0,191,255)',
-    'rgb(128,128,0)',
-    'rgb(255,140,0)',
-    'rgb(218,165,32)',
-    'rgb(205,92,92)',
-    'rgb(250,128,114)',
 
-];
+const available = "available";
+const unavailable = "unavailable";
 
-let DAYS_BEFORE = 21;
+const COLORS = {
+    'rgb(186, 216, 10)': available,
+    'rgb(0, 158, 73)': available,
+    'rgb(0, 178, 148)': available,
+    'rgb(0, 188, 242)': available,
+    'rgb(0, 24, 143)': available,
+    'rgb(104, 33, 122)': available,
+    'rgb(236, 0, 140)': available,
+    'rgb(232, 17, 35)': available,
+    'rgb(255, 140, 0)': available,
+    'rgb(255, 241, 0)': available,
+};
+
+let DAYS_BEFORE = 14;
 let state_county = [];
 let temp = {};
+
+let COUNTER = 0;
 
 let chart = undefined;
 
@@ -119,10 +88,22 @@ let config = {
 function addDataPlot(x, y, state_county) {
 
     const { state, county } = state_county;
-    // var colorName = colorNames[config.data.datasets.length % colorNames.length];
-    // var newColor = window.chartColors[colorName];
+
     config.data.labels = x;
-    let color = colors[Math.floor((Math.random() * colors.length) + 1)];
+
+    let color = undefined;
+
+    // check for the keys
+    for (let key in COLORS) {
+        if (COLORS[key] == available) {
+            color = key;
+            break;
+        }
+    }
+
+    // default in case of error
+    if (!color) { color = 'rgb(255, 0, 0)' };
+
     var newDataset = {
         label: `${state}, ${county}`,
         backgroundColor: color,
@@ -130,9 +111,14 @@ function addDataPlot(x, y, state_county) {
         data: y,
         fill: false
     };
-
+    COUNTER++;
+    // console.log("Adding a color: ", COUNTER);
     config.data.datasets.push(newDataset);
     chart.update();
+
+    COLORS[color] = unavailable;
+    console.log("COLORS USED: ", COLORS);
+
 }
 
 function removePlot(_county) {
@@ -143,12 +129,18 @@ function removePlot(_county) {
     for (index in chart.data.datasets) {
 
         if (chart.data.datasets[index].label.toLocaleLowerCase().trim() == _county.toLocaleLowerCase().trim()) {
+            COLORS[chart.data.datasets[index].backgroundColor] = available;
+
+            console.log("COLORS USED: ", COLORS);
+
             chart.data.datasets.splice(index, 1);
             chart.update();
-            console.log("County removed");
+            // console.log("County removed");
             break;
         }
     }
+
+
 }
 
 
@@ -164,7 +156,9 @@ async function add_values_to_table(data) {
     let yData = [];
 
     let { state, county } = await get_state_and_county_by_code(data[0]["geo_value"]);
-
+    let maxDate = data[0]["time_value"];
+    let minDate = data[0]["time_value"];
+    let diff = 0;
     for (indx in data) {
 
         let template = ` 
@@ -179,14 +173,36 @@ async function add_values_to_table(data) {
             <td>${data[indx]["value"]}</td>
         </tr>`;
 
+        maxDate = (maxDate < data[indx]["time_value"]) ? data[indx]["time_value"] : maxDate;
+        minDate = (minDate > data[indx]["time_value"]) ? data[indx]["time_value"] : minDate;
+
         xData.push(data[indx]["time_value"]);
         yData.push(data[indx]["value"]);
 
         $(`${table} > tbody:last-child`).append(template);
     }
 
+    diff = (maxDate - minDate).toString();
+    maxDate = maxDate.toString();
+    minDate = minDate.toString();
+
+    setHtmlDate(maxDate, availableDataFromApi_1);
+    setHtmlDate(minDate, availableDataFromApi_2);
+    $(differenceAvailableDateFromApi).text(diff);
+
+
+
     // console.log("COUNTY TO SET: ", _county);
     addDataPlot(xData, yData, { state, county });
+}
+
+function setHtmlDate(date, id) {
+
+    let year = date.substring(0, 4);
+    let month = date.substring(4, 6);
+    let day = date.substring(6);
+
+    $(id).text(`${year}/${month}/${day}`);
 }
 
 var callback = function(result, message, epidata) {
@@ -195,7 +211,11 @@ var callback = function(result, message, epidata) {
     console.log(result, message, epidata != null ? epidata.length : void 0);
 
     if (epidata != undefined && epidata.length > 0) {
+
         add_values_to_table(epidata);
+    } else {
+        console.log("Cannot find anything");
+        // alert("Cannot find any data for the specify request");
     }
 
     // else notify the user
@@ -290,8 +310,6 @@ async function get_code_by_state_county(state, county) {
 
 async function get_state_and_county_by_code(code) {
 
-    console.log("CODE: ", code);
-
     let result = await read_csv(csv_file);
 
     let found_county = result.filter((element) => {
@@ -301,8 +319,6 @@ async function get_state_and_county_by_code(code) {
 
         return fipsCode == code;
     });
-
-    console.log("HERE: ", found_county[0]);
 
     if (found_county.length == 0) {
         return null;
@@ -337,6 +353,9 @@ function createPlot(state, county) {
         if (isDuplicate) return reject(false);
 
         let code = await get_code_by_state_county(state, county);
+
+        if (!code) { return; };
+
         code = code.toString();
         code = (code.length != 5) ? `0${code}` : code;
 
@@ -355,6 +374,7 @@ function createPlot(state, county) {
 
         today = parseInt(get_days_before(null, true));
         xDaysBefore = parseInt(get_days_before(DAYS_BEFORE + 1, true));
+        // console.log("DATE BEFORE: ", xDaysBefore);
 
         GLOBAL_COUNTY = county;
         GLOBAL_STATE = state;
@@ -376,8 +396,11 @@ function get_days_before(time, justNumber = false) {
     let month = today.getMonth() + 1;
     let day = today.getDate();
 
+
     if (justNumber) {
         month = (month < 10) ? `0${month}` : month;
+        day = (day < 10) ? `0${day}` : day;
+
         return `${year}${month}${day}`;
     }
 
@@ -400,6 +423,11 @@ $(document).ready(async function() {
 
         let state = $(stateInput).val();
         let county = $(countyInput).val();
+
+        if (state == undefined || county == undefined || !isNaN(state) || !isNaN(county)) {
+            // notify the user here
+            return;
+        }
 
         await createPlot(state, county);
     });
@@ -431,6 +459,8 @@ $(document).ready(async function() {
             return false;
         });
 
+        COUNTER--;
+
         // console.log(state_county)
         $(this).parent().parent().remove();
         $(`.${id}`).remove();
@@ -444,29 +474,8 @@ $(document).ready(async function() {
         var url_base64jp = document.getElementById("myChart").toDataURL("image/jpg");
         this.href = url_base64jp;
     });
-
-
     // TIME PERIOD
     $("#time-period-title").text(DAYS_BEFORE);
     $("#date_1").text(get_days_before(null));
     $("#date_2").text(get_days_before(DAYS_BEFORE));
-
 });
-// $('.list').on('click', 'span', (e) => {
-//     $(e.target).parent().remove();
-//   });
-
-
-
-
-/* TODO: for the date in the box 
-      ************* REMEMBER TO SEARCH FOR JQUERY ****************
-
-    1. Create a new id for the box - text is prefered
-    2. do the logic to get the today's date, and X days laters
-    3. update the text using the id you got
-
-    NOTES:
-        class --> .
-        id --> #
-*/
