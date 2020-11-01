@@ -13,19 +13,27 @@ const available = "available";
 const unavailable = "unavailable";
 
 const COLORS = {
+    'rgb(0, 0, 0)': available,
+    'rgb(0, 0, 128)': available,
     'rgb(186, 216, 10)': available,
-    'rgb(0, 158, 73)': available,
-    'rgb(0, 178, 148)': available,
     'rgb(0, 188, 242)': available,
-    'rgb(0, 24, 143)': available,
     'rgb(104, 33, 122)': available,
     'rgb(236, 0, 140)': available,
-    'rgb(232, 17, 35)': available,
+    'rgb(240, 50, 230)': available,
     'rgb(255, 140, 0)': available,
-    'rgb(255, 241, 0)': available,
+    'rgb(60, 180, 75)': available,
+    'rgb(0, 130, 200)': available,
+    'rgb(145, 30, 180)': available,
+    'rgb(70, 240, 240)': available,
+    'rgb(210, 245, 60)': available,
+    'rgb(232, 17, 35)': available,
+    'rgb(170, 255, 195)': available,
+    'rgb(255, 225, 25)': available,
+    'rgb(128, 128, 0)': available,
+    'rgb(0, 158, 73)': available,
 };
 
-let DAYS_BEFORE = 14;
+let DAYS_BEFORE = 16;
 let state_county = [];
 let temp = {};
 let chart = undefined;
@@ -99,13 +107,18 @@ function addDataPlot(x, y, state_county) {
     }
 
     // default in case of error
-    if (!color) { color = 'rgb(255, 0, 0)' };
 
+    if (!color) { color = 'rgb(255, 0, 0)' };
+   // if(county==Franklin|Benton){
+        //borderDash: [10,5],
+        //markerType: "square",
+    //}
     var newDataset = {
         label: `${state}, ${county}`,
         backgroundColor: color,
         borderColor: color,
         data: y,
+        borderDash: [10,5],
         fill: false
     };
     // console.log("Adding a color: ", COUNTER);
@@ -198,7 +211,7 @@ function setHtmlDate(date, id) {
     let month = date.substring(4, 6);
     let day = date.substring(6);
 
-    $(id).text(`${year}/${month}/${day}`);
+    $(id).text(`${month}/${day}/${year}`);
 }
 
 var callback = function(result, message, epidata) {
