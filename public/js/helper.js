@@ -109,6 +109,7 @@ function addDataPlot(x, y, state_county) {
     // default in case of error
 
     if (!color) { color = 'rgb(255, 0, 0)' };
+
     var newDataset = {
         label: `${state}, ${county}`,
         backgroundColor: color,
