@@ -168,7 +168,6 @@ async function add_values_to_table(data) {
     let { state, county } = await get_state_and_county_by_code(data[0]["geo_value"]);
     let maxDate = data[0]["time_value"];
     let minDate = data[0]["time_value"];
-    let diff = 0;
     for (indx in data) {
 
         let template = ` 
@@ -191,19 +190,38 @@ async function add_values_to_table(data) {
 
         $(`${table} > tbody:last-child`).append(template);
     }
-
-    diff = (maxDate - minDate).toString();
     maxDate = maxDate.toString();
     minDate = minDate.toString();
+    // console.log(`Max Date: ${maxDate}, Min Date: ${minDate}, Diff: ${diff}`);
+
+    max = getDateByNumber(maxDate);
+    min = getDateByNumber(minDate);
+
+    let diff = new Date();
+
+    diff.setDate(max.getDate() - min.getDate());
 
     setHtmlDate(maxDate, availableDataFromApi_1);
     setHtmlDate(minDate, availableDataFromApi_2);
-    $(differenceAvailableDateFromApi).text(diff);
-
-
+    $(differenceAvailableDateFromApi).text(diff.getDate());
 
     // console.log("COUNTY TO SET: ", _county);
     addDataPlot(xData, yData, { state, county });
+}
+
+/**
+ * 
+ * @param {String} yearMonthDay - date in yearMonthDay format
+ * @returns {Date} - return date object
+ */
+function getDateByNumber(yearMonthDay) {
+
+
+    let year = yearMonthDay.substring(0, 4);
+    let month = yearMonthDay.substring(4, 6);
+    let day = yearMonthDay.substring(6);
+    return new Date(year, month, day);
+
 }
 
 function setHtmlDate(date, id) {
